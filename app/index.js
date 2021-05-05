@@ -1,6 +1,7 @@
 const mysql = require('mysql');
 const inquirer = require('inquirer');
 const cTable = require('console.table');
+const Department = require('./class/Department');
 
 const connection = mysql.createConnection({
     host: process.env.DB_HOST,
@@ -10,7 +11,21 @@ const connection = mysql.createConnection({
     database: 'sql_cms',
   });
 
-const addDepartment = () => {};
+const addDepartment = (deptObject) => {
+  const query = connection.query(
+    'INSERT INTO departments SET ?',
+    {
+      id: deptObject.id,
+      name: deptObject.name,
+    },
+    (err, res) => {
+      if (err) throw err;
+      console.log(`${res.affectedRows} department added.\n`)
+      viewDepartments();
+    }
+  );
+  console.log(query.sql);
+};
 
 const addRole = () => {};
 
@@ -35,3 +50,12 @@ const deleteRole = () => {};
 const deleteEmployee = () => {};
 
 const viewCombinedSalaries = () => {};
+
+
+connection.connect((err) => {
+  if (err) throw err;
+  console.log(`Connected as ID: ${connection.threadId}\n`);
+  const ossusTemple = new Department(2, 'Ossus Archives');
+  addDepartment(ossusTemple);
+  connection.end();
+})
