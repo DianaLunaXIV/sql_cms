@@ -2,6 +2,8 @@ const mysql = require('mysql');
 const inquirer = require('inquirer');
 const cTable = require('console.table');
 const Department = require('./class/Department');
+const Employee = require('./class/Employee');
+const Role = require('./class/Role');
 
 const connection = mysql.createConnection({
     host: process.env.DB_HOST,
@@ -27,15 +29,71 @@ const addDepartment = (deptObject) => {
   console.log(query.sql);
 };
 
-const addRole = () => {};
+const addRole = (roleObject) => {
+  const query = connection.query(
+    'INSERT INTO roles SET ?',
+    {
+      id: roleObject.id,
+      title: roleObject.name,
+      salary: roleObject.salary,
+      department_id: roleObject.departmentID,
+    },
+    (err, res) => {
+      if (err) throw err;
+      console.log(`${res.affectedRows} role added.\n`)
+      viewRoles();
+    }
+  );
+  console.log(query.sql);
+};
 
-const addEmployee = () => {};
+const addEmployee = (employeeObject) => {
+    const query = connection.query(
+    'INSERT INTO employees SET ?',
+    {
+      id: employeeObject.id,
+      first_name: employeeObject.first_name,
+      last_name: employeeObject.last_name,
+      role_id: employeeObject.roleID,
+      manager_id: employeeObject.managerID,
+    },
+    (err, res) => {
+      if (err) throw err;
+      console.log(`${res.affectedRows} role added.\n`)
+      viewEmployees();
+    }
+  );
+console.log(query.sql);};
 
-const viewDepartments = () => {};
+const viewDepartments = () => {
+  const query = connection.query(
+    'SELECT * FROM departments', 
+    (err, res) => {
+      if (err) throw err;
+      console.table(res);
+    }
+  )
+};
 
-const viewRoles = () => {};
+const viewRoles = () => {
+  const query = connection.query(
+    'SELECT * FROM roles', 
+    (err, res) => {
+      if (err) throw err;
+      console.table(res);
+    }
+  )
+};
 
-const viewEmployees = () => {};
+const viewEmployees = () => {
+  const query = connection.query(
+    'SELECT * FROM employees', 
+    (err, res) => {
+      if (err) throw err;
+      console.table(res);
+    }
+  )
+};
 
 const updateEmployeeRole = () => {};
 
@@ -55,7 +113,6 @@ const viewCombinedSalaries = () => {};
 connection.connect((err) => {
   if (err) throw err;
   console.log(`Connected as ID: ${connection.threadId}\n`);
-  const ossusTemple = new Department(2, 'Ossus Archives');
-  addDepartment(ossusTemple);
-  connection.end();
+  const coruscantTemple = new Department(3, 'Jedi Temple on Coruscant');
+  addDepartment(coruscantTemple);
 })
