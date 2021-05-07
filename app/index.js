@@ -1,9 +1,8 @@
 const mysql = require('mysql');
 const inquirer = require('inquirer');
 const cTable = require('console.table');
-const Department = require('./class/Department');
-const Employee = require('./class/Employee');
-const Role = require('./class/Role');
+const { Department, Role, Employee } = require('./class');
+const appPrompter = require('./utils/prompter')
 
 const connection = mysql.createConnection({
     host: process.env.DB_HOST,
@@ -112,7 +111,7 @@ const viewCombinedSalaries = () => {};
 
 connection.connect((err) => {
   if (err) throw err;
-  console.log(`Connected as ID: ${connection.threadId}\n`);
-  const coruscantTemple = new Department(3, 'Jedi Temple on Coruscant');
-  addDepartment(coruscantTemple);
+  console.log(`Connected to ${connection.database} as ID: ${connection.threadId}\n`);
+  appPrompter()
+  connection.end()
 })
