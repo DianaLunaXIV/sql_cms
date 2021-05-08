@@ -93,7 +93,23 @@ const viewEmployees = () => {
   )
 };
 
-const updateEmployeeRole = () => { };
+const updateEmployeeRole = (employeeID, newRole) => {
+  const query = connection.query(
+    'UPDATE employees SET ? WHERE ?',[
+      {
+        role_id: newRole,
+      },
+      {
+        id: employeeID,
+      }
+    ],
+    (err, res) => {
+      if (err) throw err;
+      console.log(`${res.affectedRows} role updated.`);
+    }
+  )
+  console.log(query.sql);
+};
 
 const updateEmployeeManager = () => { };
 
@@ -123,6 +139,7 @@ const appStartQuestions = [
       "Add Department",
       "Add Role",
       "Add Employee",
+      "Update Employee Role",
       "Exit",
     ],
     message: "Welcome to SQL_CMS! Please select an option to continue.",
@@ -192,6 +209,19 @@ const addEmployeeQuestions = [
   
 ]
 
+const updateEmployeeRoleQuestions = [
+  {
+    type: 'input',
+    name: 'employeeIDToUpdate',
+    message:'Please enter the ID of the employee whose role you wish to update.',
+  },
+  {
+    type: 'input',
+    name: 'employeeNewRole',
+    message: 'Please enter the role ID that you want to assign to the employee.'
+  }
+]
+
 //-Prompter-
 async function appPrompter() {
   let appStartChoice = await inquirer.prompt(appStartQuestions);
@@ -228,6 +258,11 @@ async function appPrompter() {
         const assembledEmployee = new Employee(rawEmployeeAnswers.employeeIDInput, rawEmployeeAnswers.employeeFirstNameInput, rawEmployeeAnswers.employeeLastNameInput, rawEmployeeAnswers.employeeRoleIDInput, rawEmployeeAnswers.employeeManagerIDInput);
         addEmployee(assembledEmployee);
         console.log(`Employee "${assembledEmployee.firstName} ${assembledEmployee.lastName}" added.`)
+        appStartChoice = await inquirer.prompt(appStartQuestions);
+        continue;
+      case "Update Employee Role":
+        const rawUpdateRoleAnswers = await inquirer.prompt(updateEmployeeRoleQuestions);
+        updateEmployeeRole(rawUpdateRoleAnswers.employeeIDToUpdate, rawUpdateRoleAnswers.employeeNewRole);
         appStartChoice = await inquirer.prompt(appStartQuestions);
         continue;
       default:
