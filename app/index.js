@@ -111,7 +111,23 @@ const updateEmployeeRole = (employeeID, newRole) => {
   console.log(query.sql);
 };
 
-const updateEmployeeManager = () => { };
+const updateEmployeeManager = (employeeID, managerID) => {
+  const query = connection.query(
+    'UPDATE employees SET ? WHERE ?',[
+      {
+        manager_id: managerID,
+      },
+      {
+        id: employeeID,
+      }
+    ],
+    (err, res) => {
+      if (err) throw err;
+      console.log(`${res.affectedRows} role updated.`);
+    }
+  )
+  console.log(query.sql);
+};
 
 const viewManagerReports = () => { };
 
@@ -140,6 +156,7 @@ const appStartQuestions = [
       "Add Role",
       "Add Employee",
       "Update Employee Role",
+      "Update Employee's Manager",
       "Exit",
     ],
     message: "Welcome to SQL_CMS! Please select an option to continue.",
@@ -222,6 +239,18 @@ const updateEmployeeRoleQuestions = [
   }
 ]
 
+const updateEmployeeManagerQuestions = [
+  {
+    type: 'input',
+    name: 'employeeIDToUpdate',
+    message:'Please enter the ID of the employee whose manager you wish to update.',
+  },
+  {
+    type: 'input',
+    name: 'employeeNewManager',
+    message: 'Please enter the ID of the manager that you want to assign to the employee.'
+  }
+]
 //-Prompter-
 async function appPrompter() {
   let appStartChoice = await inquirer.prompt(appStartQuestions);
@@ -263,6 +292,11 @@ async function appPrompter() {
       case "Update Employee Role":
         const rawUpdateRoleAnswers = await inquirer.prompt(updateEmployeeRoleQuestions);
         updateEmployeeRole(rawUpdateRoleAnswers.employeeIDToUpdate, rawUpdateRoleAnswers.employeeNewRole);
+        appStartChoice = await inquirer.prompt(appStartQuestions);
+        continue;
+      case "Update Employee's Manager":
+        const rawUpdateManagerAnswers = await inquirer.prompt(updateEmployeeManagerQuestions);
+        updateEmployeeManager(rawUpdateManagerAnswers.employeeIDToUpdate, rawUpdateManagerAnswers.employeeNewManager);
         appStartChoice = await inquirer.prompt(appStartQuestions);
         continue;
       default:
