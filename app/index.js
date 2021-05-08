@@ -5,13 +5,14 @@ const { Department, Role, Employee } = require('./class');
 
 
 const connection = mysql.createConnection({
-    host: process.env.DB_HOST,
-    port: 3306,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASS,
-    database: 'sql_cms',
-  });
+  host: process.env.DB_HOST,
+  port: 3306,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASS,
+  database: 'sql_cms',
+});
 
+//SQL functions
 const addDepartment = (deptObject) => {
   const query = connection.query(
     'INSERT INTO departments SET ?',
@@ -22,7 +23,6 @@ const addDepartment = (deptObject) => {
     (err, res) => {
       if (err) throw err;
       console.log(`${res.affectedRows} department added.\n`)
-      viewDepartments();
     }
   );
   console.log(query.sql);
@@ -40,33 +40,32 @@ const addRole = (roleObject) => {
     (err, res) => {
       if (err) throw err;
       console.log(`${res.affectedRows} role added.\n`)
-      viewRoles();
     }
   );
   console.log(query.sql);
 };
 
 const addEmployee = (employeeObject) => {
-    const query = connection.query(
+  const query = connection.query(
     'INSERT INTO employees SET ?',
     {
       id: employeeObject.id,
-      first_name: employeeObject.first_name,
-      last_name: employeeObject.last_name,
+      first_name: employeeObject.firstName,
+      last_name: employeeObject.lastName,
       role_id: employeeObject.roleID,
       manager_id: employeeObject.managerID,
     },
     (err, res) => {
       if (err) throw err;
       console.log(`${res.affectedRows} role added.\n`)
-      viewEmployees();
     }
   );
-console.log(query.sql);};
+  console.log(`\n ${query.sql}\n`);
+};
 
 const viewDepartments = () => {
   const query = connection.query(
-    'SELECT * FROM departments', 
+    'SELECT * FROM departments',
     (err, res) => {
       if (err) throw err;
       console.table(res);
@@ -76,7 +75,7 @@ const viewDepartments = () => {
 
 const viewRoles = () => {
   const query = connection.query(
-    'SELECT * FROM roles', 
+    'SELECT * FROM roles',
     (err, res) => {
       if (err) throw err;
       console.table(res);
@@ -86,7 +85,7 @@ const viewRoles = () => {
 
 const viewEmployees = () => {
   const query = connection.query(
-    'SELECT * FROM employees', 
+    'SELECT * FROM employees',
     (err, res) => {
       if (err) throw err;
       console.table(res);
@@ -94,68 +93,156 @@ const viewEmployees = () => {
   )
 };
 
-const updateEmployeeRole = () => {};
+const updateEmployeeRole = () => { };
 
-const updateEmployeeManager = () => {};
+const updateEmployeeManager = () => { };
 
-const viewManagerReports = () => {};
+const viewManagerReports = () => { };
 
-const deleteDepartment = () => {};
+const deleteDepartment = () => { };
 
-const deleteRole = () => {};
+const deleteRole = () => { };
 
-const deleteEmployee = () => {};
+const deleteEmployee = () => { };
 
-const viewCombinedSalaries = () => {};
-
-
+const viewCombinedSalaries = () => { };
 
 
 
+
+//--Inquirer--
+//-Questions-
 const appStartQuestions = [
-    {
-        type: "list",
-        name: "appStartChoice",
-        choices: [
-            "View Departments",
-            "View Roles",
-            "View Employees",
-            "Exit",
-        ],
-        message: "Welcome to SQL_CMS! Please select an option to continue.",
-    }
+  {
+    type: "list",
+    name: "appStartChoice",
+    choices: [
+      "View Departments",
+      "View Roles",
+      "View Employees",
+      "Add Department",
+      "Add Role",
+      "Add Employee",
+      "Exit",
+    ],
+    message: "Welcome to SQL_CMS! Please select an option to continue.",
+  }
+]
+const addDepartmentQuestions = [
+  {
+    type: 'input',
+    name: 'departmentIDInput',
+    message: "Please enter the department's ID number."
+  },
+  {
+    type: 'input',
+    name: 'departmentNameInput',
+    message: "Please enter the department's name."
+  },
 ]
 
-async function appPrompter() {
-    //Export this function to index.js. Break off other inquirer functions for modularity.
-    let appStartChoice = await inquirer.prompt(appStartQuestions);
-    while (appStartChoice.appStartChoice !== "Exit") {
-        switch (appStartChoice.appStartChoice) {
-            case "View Departments":
-                console.log('view department function here');
-                appStartChoice = await inquirer.prompt(appStartQuestions);
-                continue;
-            case "View Roles":
-                console.log('view roles function here');
-                appStartChoice = await inquirer.prompt(appStartQuestions);
-                continue;
-            case "View Employees":
-                console.log('view employees function here');
-                appStartChoice = await inquirer.prompt(appStartQuestions);
-                continue;
-            default:
-                continue;
+const addRoleQuestions = [
+  {
+    type: 'input',
+    name: 'roleIDInput',
+    message: "Please enter the role's ID number."
+  },
+  {
+    type: 'input',
+    name: 'roleNameInput',
+    message: "Please enter the role's name."
+  },
+  {
+    type: 'input',
+    name: 'roleSalaryInput',
+    message: "Please enter the role's salary. Do not include commas or other special characters."
+  },
+  {
+    type: 'input',
+    name: 'roleDepartmentIDInput',
+    message: "Please enter the department ID number to which the role is assigned."
+  },
+]
+const addEmployeeQuestions = [
+  {
+    type: 'input',
+    name: 'employeeIDInput',
+    message: "Please enter the employee's ID number.",
+  },
+  {
+    type: 'input',
+    name: 'employeeFirstNameInput',
+    message: "Please enter the employee's first name.",
+  },
+  {
+    type: 'input',
+    name: 'employeeLastNameInput',
+    message: "Please enter the employee's last name.",
+  },
+  {
+    type: 'input',
+    name: 'employeeRoleIDInput',
+    message: "Please enter the employee's role ID."
+  },  
+  {
+    type: 'input',
+    name: 'employeeManagerIDInput',
+    message: "Please enter the employee's manager's ID number, if the employee has a manager.",
+  },
+  
+]
 
-        }
+//-Prompter-
+async function appPrompter() {
+  let appStartChoice = await inquirer.prompt(appStartQuestions);
+  while (appStartChoice.appStartChoice !== "Exit") {
+    switch (appStartChoice.appStartChoice) {
+      case "View Departments":
+        viewDepartments();
+        appStartChoice = await inquirer.prompt(appStartQuestions);
+        continue;
+      case "View Roles":
+        viewRoles();
+        appStartChoice = await inquirer.prompt(appStartQuestions);
+        continue;
+      case "View Employees":
+        viewEmployees();
+        appStartChoice = await inquirer.prompt(appStartQuestions);
+        continue;
+      case "Add Department":
+        const rawDepartmentAnswers = await inquirer.prompt(addDepartmentQuestions);
+        const assembledDepartment = new Department(rawDepartmentAnswers.departmentIDInput, rawDepartmentAnswers.departmentNameInput);
+        addDepartment(assembledDepartment);
+        console.log(`Department "${assembledDepartment.name}" added.`)
+        appStartChoice = await inquirer.prompt(appStartQuestions);
+        continue;
+      case "Add Role":
+        const rawRoleAnswers = await inquirer.prompt(addRoleQuestions);
+        const assembledRole = new Role(rawRoleAnswers.roleIDInput, rawRoleAnswers.roleNameInput, rawRoleAnswers.roleSalaryInput, rawRoleAnswers.roleDepartmentIDInput);
+        addRole(assembledRole);
+        console.log(`Role "${assembledRole.name}" added.`)
+        appStartChoice = await inquirer.prompt(appStartQuestions);
+        continue;
+      case "Add Employee":
+        const rawEmployeeAnswers = await inquirer.prompt(addEmployeeQuestions);
+        const assembledEmployee = new Employee(rawEmployeeAnswers.employeeIDInput, rawEmployeeAnswers.employeeFirstNameInput, rawEmployeeAnswers.employeeLastNameInput, rawEmployeeAnswers.employeeRoleIDInput, rawEmployeeAnswers.employeeManagerIDInput);
+        addEmployee(assembledEmployee);
+        console.log(`Employee "${assembledEmployee.firstName} ${assembledEmployee.lastName}" added.`)
+        appStartChoice = await inquirer.prompt(appStartQuestions);
+        continue;
+      default:
+        continue;
+
     }
-    console.log('Thanks for using the app!');
-    return;
+  }
+  console.log('Thanks for using the app!');
+  connection.end()
+  return;
 }
 
 
 connection.connect((err) => {
   if (err) throw err;
-  console.log(`Connected to ${connection.database} as ID: ${connection.threadId}\n`);
+  console.log(`Connected to database as ID: ${connection.threadId}\n`);
   appPrompter()
-  connection.end()
 })
